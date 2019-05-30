@@ -1,0 +1,27 @@
+# lubridate /ymd merge allx /filling forward
+library(RCurl)
+library(lubridate)
+library(zoo)
+
+y <- read.csv('C:/Users/liingyun xu/Desktop/VIX/GIthub/UX1..index.csv')
+y <- y[,2:3]
+y <- y[!is.na(y$Date),] # remove all NA's date
+y$Date <- ymd(y$Date) # asign date form
+
+fileName <- c()
+for (i in 2:9){
+  currentName <- paste("C:/Users/liingyun xu/Desktop/VIX/GIthub/UX",i, "..index.csv",sep="")
+  fileName <- append(fileName, currentName)
+}
+fileName <- append(fileName, 'C:/Users/liingyun xu/Desktop/VIX/GIthub/VIX.Index.csv')
+for (i in fileName){
+  currentCSV <- read.csv(i)
+  currentCSV <- currentCSV[,2:3]
+  currentCSV <- currentCSV[!is.na(currentCSV$Date),]
+  currentCSV$Date <- ymd(currentCSV$Date)
+  y <- merge(y,currentCSV,by="Date",all.x=TRUE)
+}
+write.csv(y,file="C:/Users/liingyun xu/Desktop/VIX/GIthub/VTermsNA.csv")
+
+# "y" is the data frame with NA's while "complete" uses forward filling
+complete <- na.locf(na.locf(y), fromLast = TRUE)
